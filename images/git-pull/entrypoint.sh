@@ -4,17 +4,28 @@ mkdir -p /root/.ssh
 if [ ! -f /root/.ssh/id_rsa ]; then
   if [ -f /run/secrets/git-deploy_sshkey ]; then
     cp /run/secrets/git-deploy_sshkey /root/.ssh/id_rsa
+    cat /root/.ssh/id_rsa
     chmod 400 /root/.ssh/id_rsa
   fi
   host=`echo $GIT_HOST | cut -d : -f 1`
   port=22
   echo $GIT_HOST | grep -q : && port=`echo $GIT_HOST | cut -d : -f 2`
-  ssh-keyscan  -p $port $host >> /root/.ssh/known_hosts
+  ssh-keyscan -p $port $host >> /root/.ssh/known_hosts
 fi
-cd /git/$DEST
-if [ ! -d .git ]; then
-  git clone $GIT_REPO $DEST
+
+if [ ! -d $GIT_DEST ]; then
+  git clone $GIT_REPO $GIT_DEST
+else
+  cd $GIT_DEST
+  git init
+  git remote add origin $GIT_REPO
+  git fetch
+  git reset origin/master
+  git checkout -t origin/$GIT_COMMIT
 fi
+
+exit
+
 LAST_HASH=
 while [ 1 == 1 ]; do
   git fetch
@@ -29,4 +40,3 @@ while [ 1 == 1 ]; do
   [ $INTERVAL -eq 0 ] && break
   sleep $INTERVAL
 done
-
