@@ -25,7 +25,6 @@ else
     git remote add origin $GIT_REPO
   fi
   git fetch
-  git checkout -t origin/$GIT_COMMIT
 fi
 
 LAST_HASH=
