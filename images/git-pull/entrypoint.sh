@@ -1,5 +1,7 @@
 #!/bin/sh
 #set -e
+#No repo = nothing to do..
+[ -z $GIT_REPO ] && exit
 mkdir -p /root/.ssh
 if [ ! -f /root/.ssh/id_rsa ]; then
   if [ -f /run/secrets/git-deploy_sshkey ]; then
